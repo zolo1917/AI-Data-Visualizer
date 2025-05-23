@@ -1,0 +1,37 @@
+{
+  "name": "datasols",
+  "version": "1.0.0",
+  "description": "This is the backend for a AI data visulaization tool =",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "nodemon --exec  \"ts-node index.ts\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "lazyCoder@917",
+  "license": "ISC",
+  "dependencies": {
+    "@types/cors": "^2.8.18",
+    "@types/dotenv": "^8.2.3",
+    "@types/express": "^5.0.1",
+    "@types/express-fileupload": "^1.5.1",
+    "@types/lodash": "^4.17.16",
+    "@types/node": "^22.15.21",
+    "@types/pino": "^7.0.5",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "express-fileupload": "^1.5.1",
+    "langchain": "^0.3.24",
+    "lodash": "^4.17.21",
+    "pino": "^9.6.0"
+  },
+  "devDependencies": {
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "nodemon": "^3.1.10",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "ts-node": "^10.9.2"
+  }
+}
