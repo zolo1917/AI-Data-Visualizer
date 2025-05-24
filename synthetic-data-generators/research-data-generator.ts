@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import * as faker from "faker";
+import { faker } from "@faker-js/faker";
 
 interface ExperimentalRecord {
   experimentId: string;
@@ -22,11 +22,11 @@ const generateExperimentalRecords = (
   const locations = ["Lab 1", "Lab 2", "Lab 3", "Lab 4"];
 
   for (let i = 0; i < numRecords; i++) {
-    const treatmentType = faker.random.arrayElement(treatmentTypes);
+    const treatmentType = faker.helpers.arrayElement(treatmentTypes);
 
     // Generate variable values with realistic constraints
-    const variable1 = faker.random.number({ min: 0, max: 100 }); // Example: Temperature
-    let outcomeMeasure = faker.random.number({ min: 0, max: 200 }); // Example: Reaction time
+    const variable1 = faker.number.int({ min: 0, max: 100 }); // Example: Temperature
+    let outcomeMeasure = faker.number.int({ min: 0, max: 200 }); // Example: Reaction time
 
     const isControl = Math.random() < 0.2; // 20% chance of being a control group
     const isAnomaly = Math.random() < 0.05; // 5% chance of experimental anomaly
@@ -38,7 +38,7 @@ const generateExperimentalRecords = (
 
     if (isAnomaly) {
       // Anomalies, such as unexpected data spikes
-      outcomeMeasure *= faker.random.number({ min: 1.5, max: 3.0 });
+      outcomeMeasure *= faker.number.int({ min: 1.5, max: 3.0 });
     }
 
     records.push({
@@ -46,9 +46,9 @@ const generateExperimentalRecords = (
       variable1,
       variable2: treatmentType,
       outcomeMeasure,
-      experimentDate: faker.date.past(2).toISOString().split("T")[0],
-      location: faker.random.arrayElement(locations),
-      researcherId: `R${faker.random.number({ min: 1000, max: 9999 })}`,
+      experimentDate: faker.date.past().toISOString().split("T")[0],
+      location: faker.helpers.arrayElement(locations),
+      researcherId: `R${faker.number.int({ min: 1000, max: 9999 })}`,
       controlFlag: isControl,
       anomalyFlag: isAnomaly,
     });

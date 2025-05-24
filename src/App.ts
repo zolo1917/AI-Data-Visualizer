@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import cors from "cors";
 import fileUpload from "express-fileupload";
+import { UploadedFile, FileArray } from "express-fileupload";
 
 dotenv.config();
 const app = express();
@@ -42,7 +43,6 @@ const swaggerOptions = {
   apis: ["./**/*.ts"], // Path to the API docs
 };
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 /**
  * @swagger
@@ -103,16 +103,19 @@ app.get("/hello", (req: Request, res: Response) => {
  *               example: file uploaded failed
  *
  */
-import { UploadedFile } from "express-fileupload";
 
-app.post("/upload", (req: Request, res: Response) => {
+app.post("/upload", async (req: Request, res: Response) => {
   const file = req.files?.file as UploadedFile | UploadedFile[] | undefined;
   if (!file) {
-    return res.status(400).send({ message: "No file uploaded" });
+    res.status(400).json({ message: "No file uploaded" });
   }
 
-  // Handle both single and multiple file uploads
-  const filesArray = Array.isArray(file) ? file : [file];
+  // Explicitly type filesArray
+  const filesArray: UploadedFile[] = Array.isArray(file)
+    ? file.filter((f): f is UploadedFile => !!f)
+    : file
+    ? [file]
+    : [];
 
   const uploadDir = path.join(__dirname, "UploadedFiles");
   if (!fs.existsSync(uploadDir)) {
@@ -120,18 +123,24 @@ app.post("/upload", (req: Request, res: Response) => {
   }
 
   try {
-    filesArray.forEach((f) => {
-      const uploadPath = path.join(uploadDir, f.name);
-      f.mv(uploadPath, (err) => {
-        if (err) {
-          throw err;
-        }
-      });
-    });
-    res.send({ message: "File uploaded successfully" });
+    await Promise.all(
+      filesArray.map(
+        (f) =>
+          new Promise<void>((resolve, reject) => {
+            const uploadPath = path.join(uploadDir, f.name);
+            f.mv(uploadPath, (err) => {
+              if (err) return reject(err);
+              resolve();
+            });
+          })
+      )
+    );
   } catch (err) {
-    res.status(500).send({ message: "Failed to upload file" });
+    res.status(500).json({ message: "Failed to upload file" });
   }
+  res.send({ message: "File uploaded successfully" });
 });
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 export default app;
